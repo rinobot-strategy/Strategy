@@ -28,12 +28,18 @@ class Strategy : public Sample{
 	*/
 protected:
 	float robot_radius;
+	float pwm_const;
 	float distance_to_stop;
+	float limiar_theta , delta_limiar ;
+    float kp , kd , l ;
+    float v_delta , v_max, v_goal_max, v_set;
+
 	// field campo;
 	btVector3 final;
 	bool changePose;
 	int defender_line, goalkepper_line;
 	int v_max_gol_ef;
+	int status_pos1,status_pos2,status_pos3;
 
 public:
 	Strategy();	
@@ -44,9 +50,11 @@ public:
 	void killer_cpu();
 	void goalkepper();
 	void defender_root();
+	void init_position(int);
+	void setStatus_pos(int);
 	float dist_giro;
-	void rotate();
-
+	common::Command rotate();
+	common::Command go_to(btVector3,btVector3, int);
 	common::Command calc_cmd_to(btVector3 init, btVector3 final, float distance_to_stop = 10.0);
 	common::Command velocity_killer_cpu(btVector3);
 	common::Command velocity_defender_root(btVector3);

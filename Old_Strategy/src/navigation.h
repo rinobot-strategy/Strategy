@@ -24,7 +24,7 @@ void set_theta_dir(float);
 float Gaussian_Func(float r);
 float repulsive_angle(float y, float x, btVector3 pos);
 float tangencial_repulsive(Robot robo, btVector3 meta, btVector3 obstaculo, float r);
-float repulsive_spiral(Robot robo, btVector3 enemy);
+float repulsive_spiral(Robot robo, btVector3 enemy, btVector3 meta);
 float the_fih, theta_dir, omega;
 void set_side(string);
 void fake_cph(Robot robo, btVector3 meta);
