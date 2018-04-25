@@ -19,6 +19,34 @@ Strategy::Strategy(){
 	goalkepper_line = 10;
 	v_max_gol_ef = 120;
 	srand(time(NULL));
+
+    /*// Instantiate a SerialPort object.
+    //SerialPort serial_port;
+
+    //serial_port.Close();
+    // Open the Serial Port at the desired hardware port.
+    std::cout << "Tentando abrir a porta serial" << std::endl;
+    serial_port.Open("/dev/ttyUSB0");
+    std::cout << "Porta serial aberta" << std::endl;
+    
+    //Abaixo, config_serial:
+    // Set the baud rate of the serial port.
+    serial_port.SetBaudRate(BaudRate::BAUD_57600);
+
+    // Set the number of data bits.
+    serial_port.SetCharacterSize(CharacterSize::CHAR_SIZE_8);
+
+    // Turn off hardware flow control.
+    serial_port.SetFlowControl(FlowControl::FLOW_CONTROL_NONE);
+
+    // Disable parity.
+    serial_port.SetParity(Parity::PARITY_NONE);
+    
+    // Set the number of stop bits.
+    serial_port.SetStopBits(StopBits::STOP_BITS_1);
+
+    // Até aqui, main_código*/
+
     status_pos1 = 0;
     status_pos2 = 0;
     status_pos3 = 0;
@@ -51,8 +79,10 @@ void Strategy::loop(){
 		}else{
 			// Put your transmission code here
 		}
-
-		// DON'T REMOVE
+        
+        serial_port.Send_Velocities(3, commands[0].left, commands[0].right);
+		
+        // DON'T REMOVE
 		if(is_debug)
 			send_debug();
 		// DON'T REMOVE'

@@ -20,6 +20,17 @@
 using namespace Eigen;
 using namespace std;
 
+//union usado para converter float em byte e vice versa
+typedef union{
+    float  Float;
+    unsigned char Bytes[4];
+} Float2Char;
+
+//union usado para converter short em byte e vice versa
+typedef union{
+    unsigned short Short;
+    unsigned char Bytes[2];
+}Short2Char;
 
 namespace common{
     enum { NONE = 0, GOAL_TEAM1 = 1, GOAL_TEAM2 = 2, FAULT_TEAM1 = 3, FAULT_TEAM2 = 4, PENALTY_TEAM1 = 5, PENALTY_TEAM2 = 6 };

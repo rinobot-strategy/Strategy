@@ -11,9 +11,11 @@
 
 #include "sample.h"
 #include "navigation.h"
+#include "SerialPort.h"
 
 using namespace std;
 using namespace common;
+using namespace LibSerial;
 
 class Strategy : public Sample{
 	/*
@@ -40,6 +42,7 @@ protected:
 	int defender_line, goalkepper_line;
 	int v_max_gol_ef;
 	int status_pos1,status_pos2,status_pos3;
+	SerialPort serial_port; 
 
 public:
 	Strategy();	
