@@ -7,13 +7,6 @@
  }
  navigation::~navigation(){}
 
-    float navigation::Gaussian_Func(float r){
-        float delta = 3.0;
-        float G;
-        G = pow(M_E,(-pow(r,2)/(2*pow(delta,2))));
-        //cout << endl << "G: " << G << endl;
-        return G;
-    }
     
     float navigation::repulsive_angle(float x, float y, btVector3 pos)
     {
@@ -28,7 +21,7 @@
 
     float navigation::hyperbolic_spiral(float yi, float xi, btVector3 meta)
     {
-    float Kr = 0.5,g_size,phi;
+    float Kr = 5,g_size,phi;
     float theta, rho, y_aux, yl, yr , phi_cw, phi_ccw;
     float pl[2], pr[2], vec[2];
     float de = 7;
@@ -84,8 +77,8 @@
 
     void navigation::generate_univector(float yi, float xi, Robot robo, btVector3 meta, btVector3 enemy){
     
-    float k0 = 5;
-    float d_min = 10;   // Raio de Influencia do repulsivo
+    float k0 = 0.12;
+    float d_min = 6;   // Raio de Influencia do repulsivo
     float r = 15;   // Raio de Influencia do repulsivo
     float norma_s,fih_AUF,fih_TUF;
     float d = distancePoint(robo.pose, enemy);  //distancia entre o robo e o obstaculo
@@ -96,6 +89,7 @@
     robo_vel.x = robo.v_pose.x;
     robo_vel.y = robo.v_pose.y;
     //cout << robo_vel.x << " - " << robo_vel.y << endl;
+    
     s.x = k0 * ( enemy_vel.x - robo_vel.x); // Velocidade
     s.y = k0 * (enemy_vel.y - robo_vel.y);
        
@@ -112,41 +106,50 @@
            virtual_obj.y = enemy.y + (d*s.y/norma_s);
        }
 
-//  std::cout << "EX:" << enemy.x << std::endl;
-//     std::cout << "EY:" << enemy.y << std::endl;
-//     std::cout << "RX:" << robo.pose.x << std::endl;
-//     std::cout << "RY:" << robo.pose.y << std::endl;
-//      std::cout << "X:" << virtual_obj.x << std::endl;
-//     std::cout << "Y:" << virtual_obj.y << std::endl;
-    
+    if(virtual_obj.x <= enemy.x && virtual_obj.x >= robo.pose.x  ){
+    // std::cout << "EX:" << enemy.x << std::endl;
+    // std::cout << "EY:" << enemy.y << std::endl;
+    // std::cout << "RX:" << robo.pose.x << std::endl;
+    // std::cout << "RY:" << robo.pose.y << std::endl;    
+    // std::cout << "X:" << virtual_obj.x << std::endl;
+    // std::cout << "Y:" << virtual_obj.y << std::endl;
+    }
+
     fih_TUF = hyperbolic_spiral(robo.pose.y,robo.pose.x,meta);
 
-    // // Repulsivo Inatel
-    // fih_AUF = repulsive_angle(robo.pose.x,robo.pose.y,virtual_obj);
+    // Repulsivo Inatel
+    fih_AUF = repulsive_angle(robo.pose.x,robo.pose.y,virtual_obj);
 
-    // if (d <= d_min){
-    //     the_fih = fih_AUF ;
-    // }
-    // else{
-    //     the_fih = fih_AUF*Gaussian_Func(d - d_min) + fih_TUF*(1-Gaussian_Func(d - d_min));
-    //  }
-    // //  Fim Repulsivo Inatel
-
-     // Repulsive Tangencial and Spiral
-
-    fih_AUF = tangencial_repulsive(robo,meta,enemy,r);
-    fih_AUF = repulsive_spiral(robo,enemy,meta);
-
-    if (d <= r){
-        the_fih = fih_AUF ;
-        }
+   if (d <= d_min){
+       the_fih = fih_AUF ;
+    }
     else{
-        the_fih = fih_TUF;//fih_AUF*Gaussian_Func(d - r) + fih_TUF*(1-Gaussian_Func(d - r));
+        the_fih = fih_TUF*(1-Gaussian_Func(d - d_min)) + fih_AUF*Gaussian_Func(d - d_min);
      }
-    // Fim do Repulsive tangencial
-//    the_fih = fih_AUF;
-  the_fih = fih_TUF;
+    //  Fim Repulsivo Inatel
 
+    //  // Repulsive Tangencial and Spiral
+
+    // fih_AUF = tangencial_repulsive(robo,meta,enemy,r);
+    // fih_AUF = repulsive_spiral(robo,enemy,meta);
+
+    // if (d <= r){
+    //     the_fih = fih_AUF ;
+    //     }
+    // else{
+    //     the_fih = fih_AUF*Gaussian_Func(d - r) + fih_TUF*(1-Gaussian_Func(d - r));
+    //  }
+    // // Fim do Repulsive tangencial
+    // the_fih = fih_AUF;
+//  the_fih = fih_TUF;
+    }
+
+    float navigation::Gaussian_Func(float r){
+        float delta = 6;
+        float G;
+        G = pow(M_E,(-pow(r,2)/(2*pow(delta,2))));
+        //cout << endl << "G: " << G << endl;
+        return G;
     }
 
 void navigation::set_theta_dir(float val){
@@ -188,13 +191,16 @@ float navigation::tangencial_repulsive(Robot robo, btVector3 meta, btVector3 ene
 float navigation::repulsive_spiral(Robot robo, btVector3 enemy, btVector3 meta){
     float d = distancePoint(robo.pose, enemy);  //distancia entre o robo e o obstaculo
     float angle = angulation(robo.pose, enemy)*(pi/180);
-    float Kr = 16, de = 4;
-    float out,omega,zeta;
+    float Kr = 3, de = 5;
+    float out,omega,zeta,kappa;
+    float a_min,a_max; 
     int rot;
-
-    omega = repulsive_angle(robo.pose.x,robo.pose.y,meta);  // Angulo entre o robo e a bola
+    omega = repulsive_angle(meta.x,meta.y,robo.pose);  // Angulo entre o robo e a bola
     zeta = repulsive_angle(enemy.x,enemy.y,meta);                  // Angulo entre o obstaculo e a bola
-    cout << endl << "Omega: " << omega*180/pi << " Zeta: " << zeta*180/pi << endl;
+    kappa = repulsive_angle(robo.pose.x,robo.pose.y,enemy);
+    a_max = omega + pi/6;
+    a_min = omega - pi/6;
+    //cout << endl << "Omega: " << omega*180/pi << " kappa: " << kappa*180/pi << "Limites ( " << a_min*180/pi << " , " << a_max*180/pi << " )" << endl;
    
    if(omega < 0 && zeta < 0){
        if(zeta <= omega){
@@ -213,6 +219,7 @@ float navigation::repulsive_spiral(Robot robo, btVector3 enemy, btVector3 meta){
        }
    }
     rot = 1;
+    // if(a_min < kappa && kappa < a_max){
     if(rot == 1){
     if(fabs(d) > de){
         out = angle + ((pi/2)*(2-((de+Kr)/(fabs(d+Kr)))));
@@ -223,9 +230,12 @@ float navigation::repulsive_spiral(Robot robo, btVector3 enemy, btVector3 meta){
     if(fabs(d) > de){
         out = angle - ((pi/2)*(2-((de+Kr)/(fabs(d+Kr)))));
     }else{
-        out = angle - ((pi/2)*(sqrt((fabs(d)/de))));
-    }   
+        out = angle - ((pi/2)*(sqrt((fabs(d)/de))));   
     }
+    }
+    // }else{
+    //    out = omega;
+    // }
     //cout << endl << out*(180/pi) << endl;
     return out;
 }

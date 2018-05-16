@@ -509,7 +509,7 @@ namespace LibSerial
             //Escrevemos os bytes na porta serial
             SerialPort::Write(vector_bytes);
             //Finalizamos a transferência dos dados a serial
-            //SerialPort::DrainWriteBuffer();
+            SerialPort::DrainWriteBuffer();
         }else{
             cerr << "(Serial closed) Couldn't write wheels velocities at serial port." << endl;
 

@@ -53,7 +53,7 @@ Strategy::Strategy(){
     pwm_const = 100.0;
     limiar_theta = 90 , delta_limiar = 10;
     kp = 15, kd = 0.007 , l = 8;
-    v_delta = 0.5, v_max = 1.0, v_goal_max = 0.5, v_set = 0.2;
+    v_delta = 0.5, v_max = 0.8, v_goal_max = 0.2, v_set = 0.2;
 
 }
 
@@ -80,7 +80,7 @@ void Strategy::loop(){
 			// Put your transmission code here
 		}
         
-        serial_port.Send_Velocities(3, commands[0].left, commands[0].right);
+        //serial_port.Send_Velocities(3, commands[0].left, commands[0].right);
 		
         // DON'T REMOVE
 		if(is_debug)
@@ -95,20 +95,20 @@ void Strategy::calc_strategy(){
 	else
 		Navigation.set_side("left");
 
-    if(status_pos1 == 1)
+    // if(status_pos1 == 1)
 	    killer_cpu();
-    else
-       init_position(1);
+    // else
+    //    init_position(1);
         
-    if(status_pos2 == 1)        
-	     defender_root();
-    else
-         init_position(2);
+    // if(status_pos2 == 1)        
+	    // defender_root();
+    // else
+    //      init_position(2);
 
-    if(status_pos3 == 1)
+    // if(status_pos3 == 1)
 	     goalkepper();
-    else
-        init_position(3);
+    // else
+    //     init_position(3);
 
 	for(int i = 0 ; i < 3 ; i++){
 		debug.robots_path[i].poses.clear();

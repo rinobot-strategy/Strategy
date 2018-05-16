@@ -33,7 +33,7 @@ protected:
 	float pwm_const;
 	float distance_to_stop;
 	float limiar_theta , delta_limiar ;
-    float kp , kd , l ;
+    float kp , kd , l , k;
     float v_delta , v_max, v_goal_max, v_set;
 
 	// field campo;
@@ -41,7 +41,7 @@ protected:
 	bool changePose;
 	int defender_line, goalkepper_line;
 	int v_max_gol_ef;
-	int status_pos1,status_pos2,status_pos3;
+	int status_pos1,status_pos2,status_pos3, status_atk_situatin;
 	SerialPort serial_port; 
 
 public:
@@ -56,11 +56,13 @@ public:
 	void init_position(int);
 	void setStatus_pos(int);
 	float dist_giro;
-	common::Command rotate();
+	
+	common::Command rotate(btVector3, float, float);
+	common::Command Atk_situation(btVector3, float, float);
 	common::Command go_to(btVector3,btVector3, int);
 	common::Command calc_cmd_to(btVector3 init, btVector3 final, float distance_to_stop = 10.0);
 	common::Command velocity_killer_cpu(btVector3);
-	common::Command velocity_defender_root(btVector3);
+	common::Command velocity_defender_root(btVector3, btVector3);
 	common::Command velocity_goalkepper(btVector3);
 };
 
